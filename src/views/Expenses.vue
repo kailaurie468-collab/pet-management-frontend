@@ -82,6 +82,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
 import request from '@/utils/request'
 
 const expenseForm = ref({
@@ -124,8 +125,18 @@ const formatDate = (row, column, cellValue) => {
 // 生成消费清单
 const generateExpenseList = async () => {
   const { petId, startDate, endDate } = expenseForm.value
-  const start = startDate ? startDate.toISOString().split('T')[0] : ''
-  const end = endDate ? endDate.toISOString().split('T')[0] : ''
+  
+  if (!petId) {
+    ElMessage.warning('请选择要查询的宠物信息哦 🐾')
+    return
+  }
+  if (!startDate || !endDate) {
+    ElMessage.warning('请选择查询的开始和结束日期 📅')
+    return
+  }
+  
+  const start = startDate ? startDate.split(' ')[0] : ''
+  const end = endDate ? endDate.split(' ')[0] : ''
   
   try {
     const response = await request.get(`/api/expenses/list/${petId}?startDate=${start}&endDate=${end}`)
@@ -138,8 +149,8 @@ const generateExpenseList = async () => {
 // 计算总计
 const calculateTotal = async () => {
   const { petId, startDate, endDate } = expenseForm.value
-  const start = startDate ? startDate.toISOString().split('T')[0] : ''
-  const end = endDate ? endDate.toISOString().split('T')[0] : ''
+  const start = startDate ? startDate.split(' ')[0] : ''
+  const end = endDate ? endDate.split(' ')[0] : ''
   
   try {
     const response = await request.get(`/api/expenses/total/${petId}?startDate=${start}&endDate=${end}`)
@@ -152,8 +163,18 @@ const calculateTotal = async () => {
 // 导出Excel
 const exportExpenseExcel = () => {
   const { petId, startDate, endDate } = expenseForm.value
-  const start = startDate ? startDate.toISOString().split('T')[0] : ''
-  const end = endDate ? endDate.toISOString().split('T')[0] : ''
+  
+  if (!petId) {
+    ElMessage.warning('请选择您的宠物信息哦 🐾')
+    return
+  }
+  if (!startDate || !endDate) {
+    ElMessage.warning('请选择导出的开始和结束日期 📅')
+    return
+  }
+  
+  const start = startDate ? startDate.split(' ')[0] : ''
+  const end = endDate ? endDate.split(' ')[0] : ''
   const token = localStorage.getItem('token')
   window.open(`/api/expenses/export/${petId}?startDate=${start}&endDate=${end}&token=${token}`)
 }

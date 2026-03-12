@@ -31,11 +31,11 @@
       :title="dialogTitle"
       width="500px"
     >
-      <el-form :model="form" label-width="80px">
-        <el-form-item label="姓名">
+      <el-form :model="form" :rules="rules" ref="petFormRef" label-width="80px">
+        <el-form-item label="姓名" prop="name">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
-        <el-form-item label="类型">
+        <el-form-item label="类型" prop="type">
           <el-select
             v-model="form.type"
             filterable
@@ -50,16 +50,16 @@
             <el-option label="爬行动物" value="爬行动物" />
           </el-select>
         </el-form-item>
-        <el-form-item label="年龄">
+        <el-form-item label="年龄" prop="age">
           <el-input-number v-model="form.age" :min="0"></el-input-number>
         </el-form-item>
-        <el-form-item label="性别">
+        <el-form-item label="性别" prop="gender">
           <el-select v-model="form.gender">
             <el-option label="公" value="公"></el-option>
             <el-option label="母" value="母"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="品种">
+        <el-form-item label="品种" prop="breed">
           <el-select
             v-model="form.breed"
             filterable
@@ -90,10 +90,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
 import request from '@/utils/request'
 
 const pets = ref([])
 const dialogVisible = ref(false)
+const petFormRef = ref(null)
 const dialogTitle = ref('添加宠物')
 const form = ref({
   id: null,
@@ -104,6 +106,14 @@ const form = ref({
   breed: '',
   description: ''
 })
+
+const rules = {
+  name: [{ required: true, message: '请输入宠物姓名哦 🐾', trigger: 'blur' }],
+  type: [{ required: true, message: '请选择或输入宠物类型 🐱', trigger: 'change' }],
+  age: [{ required: true, message: '请输入宠物年龄 🎂', trigger: 'blur' }],
+  gender: [{ required: true, message: '请选择宠物性别 ♂/♀', trigger: 'change' }],
+  breed: [{ required: true, message: '请选择或输入宠物品种 🐩', trigger: 'change' }]
+}
 
 const getPets = async () => {
   try {
@@ -129,17 +139,28 @@ const handleAdd = () => {
 }
 
 const handleSubmit = async () => {
-  try {
-    if (form.value.id) {
-      await request.put(`/api/pets/${form.value.id}`, form.value)
+  if (!petFormRef.value) return
+  
+  await petFormRef.value.validate(async (valid) => {
+    if (valid) {
+      try {
+        if (form.value.id) {
+          await request.put(`/api/pets/${form.value.id}`, form.value)
+          ElMessage.success('更新宠物信息成功 ✨')
+        } else {
+          await request.post('/api/pets', form.value)
+          ElMessage.success('添加宠物成功 🐾')
+        }
+        dialogVisible.value = false
+        getPets()
+      } catch (error) {
+        console.error('保存宠物信息失败:', error)
+        ElMessage.error('保存失败，请稍后再试')
+      }
     } else {
-      await request.post('/api/pets', form.value)
+      ElMessage.warning('请填写完整的宠物信息哦（描述除外） 📋')
     }
-    dialogVisible.value = false
-    getPets()
-  } catch (error) {
-    console.error('保存宠物信息失败:', error)
-  }
+  })
 }
 
 const handleEdit = (row) => {

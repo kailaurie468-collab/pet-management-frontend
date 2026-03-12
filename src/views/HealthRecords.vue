@@ -83,20 +83,38 @@
       :title="dialogTitle"
       width="500px"
     >
-      <el-form :model="form" label-width="80px">
-        <el-form-item label="宠物ID">
-          <el-input v-model.number="form.petId"></el-input>
-        </el-form-item>
-        <el-form-item label="类型">
-          <el-select v-model="form.type">
-            <el-option label="体检" value="checkup"></el-option>
-            <el-option label="疫苗" value="vaccine"></el-option>
+      <el-form :model="form" :rules="rules" ref="healthFormRef" label-width="80px">
+        <el-form-item label="选择宠物" prop="petId">
+          <el-select v-model.number="form.petId" placeholder="请选择就诊宠物">
+            <el-option
+              v-for="pet in pets"
+              :key="pet.id"
+              :label="pet.name"
+              :value="pet.id"
+            />
           </el-select>
         </el-form-item>
-        <el-form-item label="内容">
-          <el-input type="textarea" v-model="form.content"></el-input>
+        <el-form-item label="类型" prop="type">
+          <el-select v-model="form.type" placeholder="请选择服务类别" @change="handleCategoryChange">
+            <el-option
+              v-for="cat in categories"
+              :key="cat"
+              :label="cat"
+              :value="cat"
+            />
+          </el-select>
         </el-form-item>
-        <el-form-item label="记录日期">
+        <el-form-item label="内容" prop="content">
+          <el-select v-model="form.content" placeholder="请选择服务描述" :disabled="!form.type">
+            <el-option
+              v-for="item in descriptions"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="记录日期" prop="recordDate">
           <el-date-picker 
             v-model="form.recordDate" 
             type="datetime" 
@@ -105,7 +123,7 @@
             placeholder="选择日期">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="医生">
+        <el-form-item label="医生" prop="doctor">
           <el-input v-model="form.doctor"></el-input>
         </el-form-item>
         <el-form-item label="备注">
@@ -123,11 +141,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { ElMessage } from 'element-plus'
 import request from '@/utils/request'
 
 const healthRecords = ref([])
 const dialogVisible = ref(false)
+const healthFormRef = ref(null)
 const dialogTitle = ref('添加健康记录')
 const form = ref({
   id: '',
@@ -138,14 +158,43 @@ const form = ref({
   doctor: '',
   notes: ''
 })
+
+const rules = {
+  petId: [{ required: true, message: '请选择就诊宠物哦 🐾', trigger: 'change' }],
+  type: [{ required: true, message: '请选择服务类别 📋', trigger: 'change' }],
+  content: [{ required: true, message: '请选择服务描述 ✍️', trigger: 'change' }],
+  recordDate: [{ required: true, message: '请选择记录日期 📅', trigger: 'change' }],
+  doctor: [{ required: true, message: '请输入就诊医生姓名 👨‍⚕️', trigger: 'blur' }]
+}
+
 const reportForm = ref({
   petId: '',
-  startDate: '',
   startDate: '',
   endDate: ''
 })
 
 const pets = ref([])
+const services = ref([])
+
+// 计算去重后的服务类别
+const categories = computed(() => {
+  const cats = services.value.map(s => s.category).filter(c => !!c)
+  return [...new Set(cats)]
+})
+
+// 根据选择的类别过滤描述
+const descriptions = computed(() => {
+  if (!form.value.type) return []
+  return services.value
+    .filter(s => s.category === form.value.type)
+    .map(s => s.description)
+    .filter(d => !!d)
+})
+
+// 当类别改变时，重置内容
+const handleCategoryChange = () => {
+  form.value.content = ''
+}
 
 // 获取宠物列表用于转换名称
 const getPets = async () => {
@@ -154,6 +203,16 @@ const getPets = async () => {
     pets.value = response.data
   } catch (error) {
     console.error('获取宠物列表失败:', error)
+  }
+}
+
+// 获取服务列表作为类型选项
+const getServices = async () => {
+  try {
+    const response = await request.get('/api/services')
+    services.value = response.data
+  } catch (error) {
+    console.error('获取服务列表失败:', error)
   }
 }
 
@@ -182,19 +241,30 @@ const getHealthRecords = async () => {
 
 // 添加或更新健康记录
 const handleSubmit = async () => {
-  try {
-    if (form.value.id) {
-      // 更新健康记录
-      await request.put(`/api/health-records/${form.value.id}`, form.value)
+  if (!healthFormRef.value) return
+  
+  await healthFormRef.value.validate(async (valid) => {
+    if (valid) {
+      try {
+        if (form.value.id) {
+          // 更新健康记录
+          await request.put(`/api/health-records/${form.value.id}`, form.value)
+          ElMessage.success('更新健康记录成功 ✨')
+        } else {
+          // 添加健康记录
+          await request.post('/api/health-records', form.value)
+          ElMessage.success('添加健康记录成功 🐾')
+        }
+        dialogVisible.value = false
+        getHealthRecords()
+      } catch (error) {
+        console.error('保存健康记录失败:', error)
+        ElMessage.error('保存失败，请稍后再试')
+      }
     } else {
-      // 添加健康记录
-      await request.post('/api/health-records', form.value)
+      ElMessage.warning('请完善健康记录信息哦（备注除外） 📋')
     }
-    dialogVisible.value = false
-    getHealthRecords()
-  } catch (error) {
-    console.error('保存健康记录失败:', error)
-  }
+  })
 }
 
 // 编辑健康记录
@@ -217,8 +287,18 @@ const handleDelete = async (id) => {
 // 导出健康报表
 const exportHealthReport = () => {
   const { petId, startDate, endDate } = reportForm.value
-  const start = startDate ? startDate.toISOString().split('T')[0] : ''
-  const end = endDate ? endDate.toISOString().split('T')[0] : ''
+  
+  if (!petId) {
+    ElMessage.warning('请选择您的宠物信息哦 🐾')
+    return
+  }
+  if (!startDate || !endDate) {
+    ElMessage.warning('请选择报表的开始和结束日期 📅')
+    return
+  }
+  
+  const start = startDate ? startDate.split(' ')[0] : ''
+  const end = endDate ? endDate.split(' ')[0] : ''
   const token = localStorage.getItem('token')
   window.open(`/api/health-records/report/${petId}?startDate=${start}&endDate=${end}&token=${token}`)
 }
@@ -227,6 +307,7 @@ const exportHealthReport = () => {
 onMounted(() => {
   getHealthRecords()
   getPets()
+  getServices()
 })
 </script>
 
