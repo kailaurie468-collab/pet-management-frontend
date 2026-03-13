@@ -18,8 +18,8 @@
         </el-table-column>
         <el-table-column prop="type" label="类型">
           <template #default="scope">
-            <el-tag :type="scope.row.type === '疫苗' ? 'success' : 'warning'" disable-transitions>
-              {{ scope.row.type }}
+            <el-tag :type="handleTagType(scope.row.type)" disable-transitions>
+              {{ formatType(scope.row.type) }}
             </el-tag>
           </template>
         </el-table-column>
@@ -124,7 +124,14 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="医生" prop="doctor">
-          <el-input v-model="form.doctor"></el-input>
+          <el-select v-model="form.doctor" placeholder="请选择主治医生">
+            <el-option
+              v-for="doc in doctors"
+              :key="doc.id"
+              :label="doc.name"
+              :value="doc.name"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="备注">
           <el-input type="textarea" v-model="form.notes"></el-input>
@@ -175,6 +182,7 @@ const reportForm = ref({
 
 const pets = ref([])
 const services = ref([])
+const doctors = ref([])
 
 // 计算去重后的服务类别
 const categories = computed(() => {
@@ -216,9 +224,32 @@ const getServices = async () => {
   }
 }
 
+// 获取医生列表
+const getDoctors = async () => {
+  try {
+    const response = await request.get('/api/doctors')
+    doctors.value = response.data
+  } catch (error) {
+    console.error('获取医生列表失败:', error)
+  }
+}
+
 const getPetName = (id) => {
   const pet = pets.value.find(p => p.id === id)
   return pet ? pet.name : id
+}
+
+// 类型格式化显示
+const formatType = (type) => {
+  if (type === 'treatment') return '医疗'
+  return type
+}
+
+// 标签样式处理
+const handleTagType = (type) => {
+  if (type === '疫苗' || type === 'vaccine') return 'success'
+  if (type === '医疗' || type === 'treatment') return 'primary'
+  return 'warning'
 }
 
 // 日期格式化方法
@@ -308,6 +339,7 @@ onMounted(() => {
   getHealthRecords()
   getPets()
   getServices()
+  getDoctors()
 })
 </script>
 
