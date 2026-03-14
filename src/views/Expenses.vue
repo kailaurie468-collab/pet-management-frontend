@@ -111,8 +111,13 @@ const getPetsAndServices = async () => {
 }
 
 const getServiceName = (id) => {
-  const svc = services.value.find(s => s.id === id)
-  return svc ? svc.name : id
+  if (!id) return '-'
+  // 处理多选：逗号分隔的 ID 字符串
+  const names = String(id).split(',').map(sId => {
+    const svc = services.value.find(s => s.id == sId)
+    return svc ? svc.name : sId
+  })
+  return names.join(' + ')
 }
 
 const formatDate = (row, column, cellValue) => {
@@ -206,7 +211,7 @@ onMounted(() => {
 .card-title {
   font-size: 18px;
   font-weight: 700;
-  color: #1e293b;
+  color: #92400e; 
 }
 
 .add-btn, .action-btn {

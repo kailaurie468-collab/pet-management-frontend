@@ -49,6 +49,12 @@ const routes = [
         name: 'Users',
         component: () => import('../views/Users.vue'),
         meta: { requiresAuth: true, requiresAdmin: true }
+      },
+      {
+        path: 'vaccine-records',
+        name: 'VaccineRecords',
+        component: () => import('../views/VaccineRecords.vue'),
+        meta: { requiresAuth: true, requiresAdmin: false }
       }
     ]
   }
@@ -74,7 +80,7 @@ router.beforeEach((to, from, next) => {
       next('/login')
     } else {
       const userInfo = JSON.parse(user)
-      if (to.meta.requiresAdmin && userInfo.role !== 'admin') {
+      if (to.meta.requiresAdmin && userInfo.role.toUpperCase() !== 'ADMIN') {
         next('/pets')
       } else {
         next()

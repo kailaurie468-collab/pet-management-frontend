@@ -1,13 +1,13 @@
 /* ===== 现代设计系统 CSS 变量 ===== */
 :root {
-  /* 高级感靛蓝色系 Indigo */
-  --el-color-primary: #4f46e5;
-  --el-color-primary-light-3: #818cf8;
-  --el-color-primary-light-5: #a5b4fc;
-  --el-color-primary-light-7: #c7d2fe;
-  --el-color-primary-light-8: #e0e7ff;
-  --el-color-primary-light-9: #eef2ff;
-  --el-color-primary-dark-2: #4338ca;
+  /* 温馨琥珀色系 Amber */
+  --el-color-primary: #f59e0b;
+  --el-color-primary-light-3: #fbbf24;
+  --el-color-primary-light-5: #fcd34d;
+  --el-color-primary-light-7: #fde68a;
+  --el-color-primary-light-8: #fef3c7;
+  --el-color-primary-light-9: #fffbeb;
+  --el-color-primary-dark-2: #d97706;
 
   /* 边框圆角 */
   --el-border-radius-base: 8px;
@@ -80,7 +80,7 @@ body, html {
   padding: 0;
   height: 100%;
   width: 100%;
-  background-color: #f1f5f9; /* 柔和浅灰 */
+  background-color: #fffaf0; /* 暖色调奶油白 */
   color: #1e293b;
 }
 

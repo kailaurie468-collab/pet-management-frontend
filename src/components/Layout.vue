@@ -1,17 +1,20 @@
 <template>
   <div class="layout">
     <el-container class="app-container">
-      <el-aside width="240px" class="sidebar">
-        <div class="logo-container">
-          <el-icon class="logo-icon"><Platform /></el-icon>
-          <span class="logo-text">宠物信息管理</span>
+      <el-aside width="128px" class="sidebar glass-sidebar">
+        <div class="brand-section">
+          <div class="brand-logo">
+            <el-icon><Platform /></el-icon>
+          </div>
+          <h1 class="brand-text">宠物信息<br/>管理</h1>
         </div>
+
         <el-menu
           :default-active="activeMenu"
           class="custom-menu"
           background-color="transparent"
-          text-color="#94a3b8"
-          active-text-color="#fff"
+          text-color="#5D4037"
+          active-text-color="#ffffff"
           @select="handleMenuSelect"
         >
           <el-menu-item index="pets" class="menu-item-custom">
@@ -21,6 +24,10 @@
           <el-menu-item index="health-records" class="menu-item-custom">
             <el-icon><Document /></el-icon>
             <span>健康记录</span>
+          </el-menu-item>
+          <el-menu-item index="vaccine-records" class="menu-item-custom">
+            <el-icon><FirstAidKit /></el-icon>
+            <span>疫苗记录</span>
           </el-menu-item>
           <el-menu-item index="doctors" class="menu-item-custom">
             <el-icon><Avatar /></el-icon>
@@ -40,8 +47,13 @@
           </el-menu-item>
         </el-menu>
         
-        <div class="sidebar-footer">
-          <div class="version-tag">v1.0.0 Beta</div>
+        <div class="sidebar-footer-new">
+          <div class="footer-illustration-wrapper">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuChgnVrxI6QfPbxTfPylL1rdsM7dyzsgWZmW31nMt65HWYIdByIEx0-h7FNmCpB1IqGCVc7cJdXak-99gVaQNjOm2NV4Hwc_T_qF0nfj97R1PscYUh3PUYaRHYozrE1wUNG2WDfmL4IQSaRiIrFWxA5VcQxK5cb0UZ8jY1iZ0DzRUmVpA--vfFsZqw5ad9JEX-GdXp_tPjRIU-49-Iv2OJS_QVP2w8HQmmCgHSNQR-oDnnlb5FR8Pi9NjJgP2kmXSj3vg6t3nI9Sqoh" alt="Pet" class="footer-pet-img"/>
+            <div class="floating-bubble"></div>
+          </div>
+          <p class="wish-text">愿宝贝健康成长</p>
+          <span class="version-tag-new">v1.0.0 Beta</span>
         </div>
       </el-aside>
       
@@ -79,7 +91,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { House, Document, List, Money, User, Platform, Avatar } from '@element-plus/icons-vue'
+import { House, Document, List, Money, User, Platform, Avatar, FirstAidKit } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 import { ElMessage } from 'element-plus'
 
@@ -95,26 +107,25 @@ onMounted(() => {
     try {
       const user = JSON.parse(userStr)
       userName.value = user.name || user.username
-      isAdmin.value = user.role === 'admin'
+      isAdmin.value = user.role.toUpperCase() === 'ADMIN'
     } catch (e) {}
   }
   // 同步当前路由高亮
-  const path = route.path.substring(1)
-  if (path) {
-    activeMenu.value = path
-  }
+  const path = route.path.split('/').pop() || 'pets'
+  activeMenu.value = path
 })
 
 const pageTitle = computed(() => {
   const map = {
-    'pets': '宠物档案',
-    'health-records': '健康记录',
-    'services': '服务管理',
-    'expenses': '费用核算',
-    'doctors': '专家名录',
-    'users': '系统管理'
+    'pets': '宠物档案中心',
+    'health-records': '宠物健康日志',
+    'services': '医疗服务管理',
+    'expenses': '账单费用核算',
+    'doctors': '宠物专家团队',
+    'vaccine-records': '宠物疫苗档案',
+    'users': '系统用户管理'
   }
-  return map[activeMenu.value] || '宠物管理系统'
+  return map[activeMenu.value] || '宠物关怀管理系统'
 })
 
 const handleMenuSelect = (key) => {
@@ -134,96 +145,182 @@ const handleLogout = async () => {
 </script>
 
 <style scoped>
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s;
+  z-index: 10;
+  border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-sidebar {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.05);
+}
+
+.brand-section {
+  padding: 32px 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-logo {
+  width: 48px;
+  height: 48px;
+  background: #FF8A3D;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 24px;
+  box-shadow: 0 4px 12px rgba(255, 138, 61, 0.3);
+}
+
+.brand-text {
+  font-size: 13px;
+  font-weight: 800;
+  color: #5D4037;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.custom-menu {
+  flex: 1;
+  border-right: none;
+  padding: 0 12px;
+}
+
+.menu-item-custom {
+  height: auto !important;
+  line-height: normal !important;
+  padding: 16px 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 16px !important;
+  margin-bottom: 12px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.menu-item-custom :deep(.el-icon) {
+  margin-right: 0 !important;
+  margin-bottom: 6px;
+  font-size: 22px;
+  opacity: 0.7;
+}
+
+.menu-item-custom span {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.menu-item-custom:hover {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+  transform: translateY(-2px);
+}
+
+.menu-item-custom.is-active {
+  background: linear-gradient(135deg, #FF8A3D 0%, #FF6B00 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 16px rgba(255, 107, 0, 0.35) !important;
+}
+
+.menu-item-custom.is-active :deep(.el-icon) {
+  opacity: 1;
+}
+
+.sidebar-footer-new {
+  padding: 24px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.footer-illustration-wrapper {
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.footer-pet-img {
+  width: 56px;
+  height: 48px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.footer-illustration-wrapper:hover .footer-pet-img {
+  transform: scale(1.1);
+}
+
+.floating-bubble {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 10px;
+  height: 10px;
+  background: #FF8A3D;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  animation: bounce 2s infinite;
+}
+
+.wish-text {
+  color: #5D4037;
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.8;
+  margin: 0 0 4px;
+}
+
+.version-tag-new {
+  font-size: 8px;
+  color: rgba(93, 64, 55, 0.5);
+  font-family: monospace;
+  letter-spacing: 1px;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+/* Background for the whole layout to support glass effect */
 .layout {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background-color: var(--el-bg-color-page);
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
 }
 
 .app-container {
   height: 100%;
 }
 
-.sidebar {
-  background: #0f172a; /* 深蓝黑现代色 */
-  display: flex;
-  flex-direction: column;
-  transition: all 0.3s;
-  box-shadow: 4px 0 24px rgba(0,0,0,0.05);
-  z-index: 10;
-}
-
-.logo-container {
-  height: 80px;
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  gap: 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-.logo-icon {
-  font-size: 28px;
-  color: var(--el-color-primary-light-3);
-}
-
-.logo-text {
-  font-size: 20px;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: -0.5px;
-}
-
-.custom-menu {
-  flex: 1;
-  border-right: none;
-  padding: 16px 12px;
-}
-
-.menu-item-custom {
-  border-radius: 12px;
-  margin-bottom: 8px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.menu-item-custom:hover {
-  background-color: rgba(255,255,255,0.05) !important;
-  color: #fff !important;
-}
-
-.menu-item-custom.is-active {
-  background: linear-gradient(135deg, var(--el-color-primary) 0%, var(--el-color-primary-dark-2) 100%) !important;
-  color: #fff !important;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
-}
-
-.sidebar-footer {
-  padding: 24px;
-  font-size: 12px;
-}
-
-.version-tag {
-  background: rgba(255,255,255,0.1);
-  color: #94a3b8;
-  padding: 6px 12px;
-  border-radius: 20px;
-  text-align: center;
-  font-weight: 600;
-}
-
 .main-container {
   display: flex;
   flex-direction: column;
-  background-color: #f1f5f9;
+  background-color: transparent;
 }
 
 .header {
   height: 80px;
-  background-color: rgba(255,255,255,0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   justify-content: space-between;
   align-items: center;
