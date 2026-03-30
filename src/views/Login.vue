@@ -16,7 +16,8 @@
           </header>
 
           <div class="hero-image-box">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZjVMDUzO7gilnphR23siYb5DibDfGXnqljScGWFDMqGPMRc4fAPFgJbZ7l64VVs8Iy89kdpuB37V-TPDyWY762BTy_hQjqeNU7L3A6jD-3fRhEo80fCx4OvzfjQiI0fSLP09bH-4XNAqGgMJcBSnOHN1409jSmwjuzQmZ3Cbc1tsUj9B82Pvnw2Vd7a7T_Qwn869h8-RypAcl_vXneVrpaMUqvBRCfBFyAQSMDCjhg3EOqYj_1BuBPBf_HJRkKxG19c2NNa5T6ndK" alt="Happy Pets" class="hero-img">
+           <img src="@/assets/pet.png" alt="Happy Pets" class="hero-img">
+            <!-- <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZjVMDUzO7gilnphR23siYb5DibDfGXnqljScGWFDMqGPMRc4fAPFgJbZ7l64VVs8Iy89kdpuB37V-TPDyWY762BTy_hQjqeNU7L3A6jD-3fRhEo80fCx4OvzfjQiI0fSLP09bH-4XNAqGgMJcBSnOHN1409jSmwjuzQmZ3Cbc1tsUj9B82Pvnw2Vd7a7T_Qwn869h8-RypAcl_vXneVrpaMUqvBRCfBFyAQSMDCjhg3EOqYj_1BuBPBf_HJRkKxG19c2NNa5T6ndK" alt="Happy Pets" class="hero-img"> -->
           </div>
 
           <h2 class="hero-title">每一个宠物都有一个独特的故事</h2>
@@ -129,7 +130,6 @@ const handleLogin = async () => {
         
         localStorage.setItem('token', res.data.token)
         localStorage.setItem('user', JSON.stringify(res.data.user))
-        
         ElMessage.success('Login Successful')
         router.push('/')
       } else {

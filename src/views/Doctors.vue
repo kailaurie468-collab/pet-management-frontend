@@ -135,7 +135,7 @@ onMounted(() => {
   if (userStr) {
     try {
       const user = JSON.parse(userStr)
-      isAdmin.value = user.role === 'admin'
+      isAdmin.value = user.role && user.role.toUpperCase() === 'ADMIN'
     } catch (e) {}
   }
   getDoctors()

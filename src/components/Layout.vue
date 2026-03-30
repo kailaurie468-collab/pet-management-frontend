@@ -49,7 +49,8 @@
         
         <div class="sidebar-footer-new">
           <div class="footer-illustration-wrapper">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuChgnVrxI6QfPbxTfPylL1rdsM7dyzsgWZmW31nMt65HWYIdByIEx0-h7FNmCpB1IqGCVc7cJdXak-99gVaQNjOm2NV4Hwc_T_qF0nfj97R1PscYUh3PUYaRHYozrE1wUNG2WDfmL4IQSaRiIrFWxA5VcQxK5cb0UZ8jY1iZ0DzRUmVpA--vfFsZqw5ad9JEX-GdXp_tPjRIU-49-Iv2OJS_QVP2w8HQmmCgHSNQR-oDnnlb5FR8Pi9NjJgP2kmXSj3vg6t3nI9Sqoh" alt="Pet" class="footer-pet-img"/>
+            <img src="@/assets/pet1.png" alt="Pet" class="footer-pet-img"/>
+            <!-- <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuChgnVrxI6QfPbxTfPylL1rdsM7dyzsgWZmW31nMt65HWYIdByIEx0-h7FNmCpB1IqGCVc7cJdXak-99gVaQNjOm2NV4Hwc_T_qF0nfj97R1PscYUh3PUYaRHYozrE1wUNG2WDfmL4IQSaRiIrFWxA5VcQxK5cb0UZ8jY1iZ0DzRUmVpA--vfFsZqw5ad9JEX-GdXp_tPjRIU-49-Iv2OJS_QVP2w8HQmmCgHSNQR-oDnnlb5FR8Pi9NjJgP2kmXSj3vg6t3nI9Sqoh" alt="Pet" class="footer-pet-img"/> -->
             <div class="floating-bubble"></div>
           </div>
           <p class="wish-text">愿宝贝健康成长</p>
